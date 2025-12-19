@@ -1,10 +1,117 @@
-<!DOCTYPE html>
-<html>
+    <!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>Hello World Page</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=800, initial-scale=1.0">
+    <title>Kipa</title>
+    <style>
+        * {
+            font-family: Arial, sans-serif;
+            margin: 0px;
+            padding: 0px;
+        }
+
+        body {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            flex-direction: row;
+        }
+
+        .flex_row {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .flex_col {
+            display: flex;
+            flex-direction: column;
+        }
+
+        #page {
+            width: 100%;
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
 </head>
+
 <body>
-    <h1>Olá, Mundo!</h1>
-    <p>Esta página está hospedada no GitHub Pages.</p>
+    <div id="page">
+        <div id="x"></div>
+        <div id="y"></div>
+    </div>
+    <div id="db" style="display: none;">{"system":{"version":"0.0.1","GET":{"p":"1","f":"5"}},"table":{}}</div>
+    <script>
+        // -- Variáveis Globais --
+        db = {
+            system: {
+                'data': {
+                    'version': '0.0.1',
+                    'GET': {}
+                },
+                init: function () {
+                    if (window.location.search != '') {
+                        (window.location.search).split('?')[1].split('&').forEach(element => {
+                            let p = element.split('=');
+                            this.data.GET[p[0]] = p[1];
+                        });
+                    } else {
+                        this.data.GET = {};
+                    }
+                },
+            },
+            table: {
+                'data': {},
+                list: function () {
+                    return Object.keys(this.data);
+                },
+                new: function (table_name) {
+                    if (!this.data[table_name]) {
+                        this.data[table_name] = [];
+                    }
+                },
+                delete: function (table_name) {
+                    if (this.data[table_name]) {
+                        delete this.data[table_name];
+                    }
+                },
+            },
+            init: function () {
+                this.system.init();
+                this.load();
+            },
+            save: function () {
+                let a = {};
+                a['system'] = this.system.data;
+                a['table'] = this.table.data;
+                document.getElementById('db').innerHTML = JSON.stringify(a);
+            },
+            load: function () {
+                s = document.getElementById('db').innerHTML;
+                if (s != '') {
+                    let a = JSON.parse(document.getElementById('db').innerHTML);
+                    this.system.data = a['system'];
+                    this.table.data = a['table'];
+                }
+            },
+        };
+        vw = {};
+        // -- Funções de Utilidade --
+        function isArray(value) {
+            return Array.isArray(value);
+        }
+        function isObject(value) {
+            return value !== null && typeof value === 'object' && !Array.isArray(value);
+        }
+
+        // -- Inicialização --
+        db.init();
+        console.log(db.table.list());
+        db.save();
+    </script>
+    <script src="./index_files/comm.js"></script>
+
 </body>
 </html>
